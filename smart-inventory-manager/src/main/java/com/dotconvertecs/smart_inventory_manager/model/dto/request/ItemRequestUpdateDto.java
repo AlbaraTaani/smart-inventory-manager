@@ -8,10 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-/**
- * Update DTO - split from create DTO to allow future differences (partial update, permissions, etc.).
- * Currently requires same validations as create. Change later if you support PATCH-style updates.
- */
+
 @Data
 @Builder
 @NoArgsConstructor

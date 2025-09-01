@@ -28,7 +28,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // RowMapper to convert a ResultSet row into an Item
+
     private static final RowMapper<Item> ITEM_ROW_MAPPER = (rs, rowNum) -> {
         Item item = new Item();
         item.setId(rs.getLong("id"));
@@ -90,7 +90,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         return jdbcTemplate.update(sql, id);
     }
 
-    // Custom query for low-stock items
+
     public List<Item> findLowStock(int threshold) {
         String sql = "SELECT id, name, description, quantity, price FROM items WHERE quantity <= ?";
         return jdbcTemplate.query(sql, ITEM_ROW_MAPPER, threshold);

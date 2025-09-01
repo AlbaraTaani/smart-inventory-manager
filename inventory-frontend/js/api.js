@@ -10,7 +10,6 @@ async function request(url, opts = {}){
     body = await res.text();
   }
   if (!res.ok){
-    // Attempt to read ErrorResponse {timestamp, status, message}
     const msg = body && body.message ? body.message : (typeof body === 'string' ? body : 'Unknown error');
     const error = new Error(msg);
     error.status = res.status;

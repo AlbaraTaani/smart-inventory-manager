@@ -6,7 +6,6 @@ const root = document.getElementById('app');
 function router(){
   const hash = location.hash || '#/items';
   const parts = hash.replace(/^#\/?/, '').split('/');
-  // patterns: items | items,new | items,edit,id
   if (parts[0] === 'items'){
     if (parts[1] === 'new'){
       mountForm(root, null);
@@ -16,7 +15,6 @@ function router(){
       mountList(root);
     }
   } else {
-    // default
     location.hash = '#/items';
   }
 }

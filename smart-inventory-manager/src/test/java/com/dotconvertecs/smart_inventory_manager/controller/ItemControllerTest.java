@@ -32,10 +32,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Controller tests using standalone MockMvc so we avoid @MockBean (deprecated in your setup).
- * This creates the controller with a Mockito mock and attaches the global exception handler.
- */
+
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 public class ItemControllerTest {
 
@@ -50,7 +47,6 @@ public class ItemControllerTest {
         controller = new ItemController(service);
         objectMapper = new ObjectMapper();
 
-        // Enable bean validation support in standaloneSetup
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(new GlobalExceptionHandler())
@@ -107,7 +103,6 @@ public class ItemControllerTest {
 
     @Test
     public void testCreateItem_validationError() throws Exception {
-        // Missing name and negative quantity -> should trigger validation error
         String badJson = """
                 {
                   "name": "",
@@ -121,7 +116,7 @@ public class ItemControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(badJson))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").exists()); // message contains field errors
+                .andExpect(jsonPath("$.message").exists());
 
         verify(service, never()).createItem(any());
     }
@@ -148,7 +143,6 @@ public class ItemControllerTest {
 
     @Test
     public void testDeleteItem_returns204() throws Exception {
-        // service.deleteItem doesn't return; we just verify it is called and returns no content
         doNothing().when(service).deleteItem(3L);
 
         mockMvc.perform(delete("/api/items/3"))
@@ -170,7 +164,6 @@ public class ItemControllerTest {
 
     @Test
     public void testFilteringAndSorting_paramsPassedToService() throws Exception {
-        // ensure query params are passed to service
         when(service.getAllItems(10.0, 100.0, "price", "desc")).thenReturn(List.of());
 
         mockMvc.perform(get("/api/items")

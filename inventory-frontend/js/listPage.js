@@ -10,7 +10,6 @@ export default function mountList(container){
   lowStockBtn.className = 'btn';
   lowStockBtn.textContent = 'Show Low-stock';
 
-  // Threshold input (default 5) — user can change to 1,2,3,...
   const thresholdInput = document.createElement('input');
   thresholdInput.type = 'number';
   thresholdInput.min = '0';
@@ -61,7 +60,6 @@ export default function mountList(container){
     try{
       let items;
       if (lowMode){
-        // Use user-provided threshold; fallback to 5 if invalid
         const raw = thresholdInput.value;
         let threshold = Number(raw);
         if (Number.isNaN(threshold) || threshold < 0) threshold = 5;
@@ -99,7 +97,6 @@ export default function mountList(container){
     if (t === lowStockBtn){
       lowMode = !lowMode;
       lowStockBtn.textContent = lowMode ? 'Show All' : 'Show Low-stock';
-      // If toggling on, immediately load low stock with the threshold currently set
       await load();
     } else if (t === filterBtn){
       lowMode = false;
@@ -112,7 +109,6 @@ export default function mountList(container){
     }
   });
 
-  // If threshold is changed while lowMode is active, reload automatically
   thresholdInput.addEventListener('change', async () => {
     if (lowMode) await load();
   });

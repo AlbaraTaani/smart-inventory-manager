@@ -10,7 +10,7 @@ import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestUp
 import com.dotconvertecs.smart_inventory_manager.model.dto.response.ItemResponseDto;
 
 
-@Component // Mark this as a Spring-managed component
+@Component
 public class ItemMapper {
 
     public ItemResponseDto toResponse(Item item) {

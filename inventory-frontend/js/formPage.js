@@ -54,7 +54,6 @@ export default function mountForm(container, id){
       price: form.price.value === '' ? null : Number(form.price.value)
     };
 
-    // client-side validation
     const errs = [];
     if (!dto.name) errs.push('Name is required');
     if (dto.quantity == null || Number.isNaN(dto.quantity)) errs.push('Quantity is required');
@@ -77,7 +76,6 @@ export default function mountForm(container, id){
         location.hash = '#/items';
       }
     } catch (err){
-      // err.body may contain ErrorResponse
       const msg = err.body && err.body.message ? err.body.message : err.message;
       message.innerHTML = `<div class="error">${escapeHtml(msg || 'Request failed')}</div>`;
     }
