@@ -66,7 +66,6 @@ public class ItemController {
         return ResponseEntity.ok(updated);
     }
 
-    // DELETE /api/items/{id}
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         service.deleteItem(id);
