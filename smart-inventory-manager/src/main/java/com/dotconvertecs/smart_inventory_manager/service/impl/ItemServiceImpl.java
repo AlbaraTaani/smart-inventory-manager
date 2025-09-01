@@ -27,41 +27,17 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemResponseDto> getAllItems(Double minPrice, Double maxPrice, String sortBy, String order) {
         List<Item> items = repository.findAll();
 
-        // Price filtering (no change here)
-        if (minPrice != null) {
-            items = items.stream()
-                    .filter(i -> i.getPrice() >= minPrice)
-                    .collect(Collectors.toList());
-        }
-        if (maxPrice != null) {
-            items = items.stream()
-                    .filter(i -> i.getPrice() <= maxPrice)
-                    .collect(Collectors.toList());
-        }
+        items = filterPrice(items,minPrice,maxPrice);
 
         // Sorting (no change here)
-        Comparator<Item> comparator;
-        if ("price".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator.comparing(Item::getPrice);
-        } else if ("name".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator.comparing(Item::getName);
-        } else if ("quantity".equalsIgnoreCase(sortBy)) {
-            comparator = Comparator.comparing(Item::getQuantity);
-        } else {
-            comparator = Comparator.comparing(Item::getId);
-        }
 
-        if ("desc".equalsIgnoreCase(order)) {
-            comparator = comparator.reversed();
-        }
-        items.sort(comparator);
+        items.sort(buildComparator(sortBy,order));
 
         // 2. Use the mapper for the final conversion
         return items.stream()
                 .map(itemMapper::toResponse) // Replaced this::toDto with itemMapper::toResponse
                 .collect(Collectors.toList());
     }
-
     @Override
     public ItemResponseDto getItemById(Long id) {
         Item item = repository.findById(id)
@@ -113,6 +89,35 @@ public class ItemServiceImpl implements ItemService {
                 .map(itemMapper::toResponse)
                 .collect(Collectors.toList());
     }
+    private List<Item> filterPrice(List<Item> items, Double minPrice, Double maxPrice) {
+        // Start the stream
+        var itemsStream = items.stream();
 
+        // Conditionally add filters to the same stream
+        if (minPrice != null) {
+            itemsStream = itemsStream.filter(i -> i.getPrice() >= minPrice);
+        }
+        if (maxPrice != null) {
+            itemsStream = itemsStream.filter(i -> i.getPrice() <= maxPrice);
+        }
+
+        // Collect the results only ONCE at the end
+        return itemsStream.collect(Collectors.toList());
+    }
+
+
+    private Comparator<Item> buildComparator(String sortBy,String order){
+        Comparator<Item> comparator;
+        if ("price".equalsIgnoreCase(sortBy)) {
+            comparator = Comparator.comparing(Item::getPrice);
+        } else {
+            comparator = Comparator.comparing(Item::getId);
+        }
+
+        if ("desc".equalsIgnoreCase(order)) {
+            comparator = comparator.reversed();
+        }
+        return comparator;
+    }
     // 3. The private toDto helper method is now removed! ✅
 }

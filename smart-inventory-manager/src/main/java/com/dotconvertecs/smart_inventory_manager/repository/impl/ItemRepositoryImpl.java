@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.springframework.jdbc.core.JdbcOperationsExtensionsKt.query;
@@ -51,22 +52,6 @@ public class ItemRepositoryImpl implements ItemRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
-    }
-
-    public int create(Item item) {
-        String sql = "INSERT INTO items (name, description, quantity, price) VALUES (?, ?, ?, ?)";
-        // Use KeyHolder to get generated ID if needed
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, item.getName());
-            ps.setString(2, item.getDescription());
-            ps.setInt(3, item.getQuantity());
-            ps.setDouble(4, item.getPrice());
-            return ps;
-        }, keyHolder);
-        item.setId(keyHolder.getKey().longValue());
-        return keyHolder.getKey().intValue();
     }
 
     public int update(Item item) {

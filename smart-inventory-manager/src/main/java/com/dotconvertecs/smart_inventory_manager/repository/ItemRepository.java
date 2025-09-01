@@ -15,5 +15,5 @@ public interface ItemRepository {
     List<Item> findLowStock(int threshold);
 
 
-    int create(Item item);
+//    int create(Item item);
 }

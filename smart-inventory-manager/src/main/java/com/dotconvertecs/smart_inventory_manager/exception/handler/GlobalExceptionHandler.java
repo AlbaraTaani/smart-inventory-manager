@@ -1,6 +1,6 @@
 package com.dotconvertecs.smart_inventory_manager.exception.handler;
 
-import com.dotconvertecs.smart_inventory_manager.exception.ErrorResponse;
+import com.dotconvertecs.smart_inventory_manager.model.dto.error.ErrorResponse;
 import com.dotconvertecs.smart_inventory_manager.exception.custome.ItemNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +36,7 @@ public class GlobalExceptionHandler {
                 message);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
 
     // Catch-all for other exceptions
     @ExceptionHandler(Exception.class)

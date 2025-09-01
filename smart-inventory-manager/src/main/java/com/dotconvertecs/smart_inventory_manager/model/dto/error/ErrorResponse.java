@@ -1,4 +1,4 @@
-package com.dotconvertecs.smart_inventory_manager.exception;
+package com.dotconvertecs.smart_inventory_manager.model.dto.error;
 
 import lombok.Data;
 import java.time.LocalDateTime;

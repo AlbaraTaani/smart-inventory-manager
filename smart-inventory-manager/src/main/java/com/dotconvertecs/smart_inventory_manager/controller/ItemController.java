@@ -4,7 +4,6 @@ import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestCr
 import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestUpdateDto;
 import com.dotconvertecs.smart_inventory_manager.model.dto.response.ItemResponseDto;
 import com.dotconvertecs.smart_inventory_manager.service.ItemService;
-import com.dotconvertecs.smart_inventory_manager.service.impl.ItemServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
-
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class ItemController {
     private final ItemService service;
 
