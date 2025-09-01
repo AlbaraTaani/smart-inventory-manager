@@ -65,7 +65,6 @@ public class ItemRepositoryImpl implements ItemRepository {
             ps.setDouble(4, item.getPrice());
             return ps;
         }, keyHolder);
-        // Assuming the ID is auto-generated
         item.setId(keyHolder.getKey().longValue());
         return keyHolder.getKey().intValue();
     }

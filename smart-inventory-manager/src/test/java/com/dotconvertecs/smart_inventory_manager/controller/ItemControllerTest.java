@@ -1,7 +1,7 @@
 package com.dotconvertecs.smart_inventory_manager.controller;
 
 
-import com.dotconvertecs.smart_inventory_manager.exception.GlobalExceptionHandler;
+import com.dotconvertecs.smart_inventory_manager.exception.handler.GlobalExceptionHandler;
 import com.dotconvertecs.smart_inventory_manager.exception.custome.ItemNotFoundException;
 import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestCreateDto;
 import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestUpdateDto;

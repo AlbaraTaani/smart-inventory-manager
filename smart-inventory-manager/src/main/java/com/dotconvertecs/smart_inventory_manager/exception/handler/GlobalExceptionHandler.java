@@ -1,5 +1,6 @@
-package com.dotconvertecs.smart_inventory_manager.exception;
+package com.dotconvertecs.smart_inventory_manager.exception.handler;
 
+import com.dotconvertecs.smart_inventory_manager.exception.ErrorResponse;
 import com.dotconvertecs.smart_inventory_manager.exception.custome.ItemNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,24 +1,41 @@
 package com.dotconvertecs.smart_inventory_manager.model.mapper;
 
-import com.dotconvertecs.smart_inventory_manager.model.dto.ItemDTO;
 import com.dotconvertecs.smart_inventory_manager.model.entity.Item;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
-@Component
+
+import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestCreateDto;
+import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestUpdateDto;
+import com.dotconvertecs.smart_inventory_manager.model.dto.response.ItemResponseDto;
+
+
+@Component // Mark this as a Spring-managed component
 public class ItemMapper {
-    public ItemDTO toDTO(Item item){
-        return new ItemDTO(item.getId(),item.getName(),item.getDescription(),item.getQuantity(),item.getPrice());
-    }
-    public Item toEntity(ItemDTO dto){
-        return new Item(dto.getId(),dto.getName(),dto.getDescription(),dto.getQuantity(),dto.getPrice());
+
+    public ItemResponseDto toResponse(Item item) {
+        return ItemResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .quantity(item.getQuantity())
+                .price(item.getPrice())
+                .build();
     }
 
-    public List<Item> toEntities(List<ItemDTO> dtos){
-        return dtos.stream().map(this::toEntity).toList();
+    public Item toEntity(ItemRequestCreateDto dto) {
+        return Item.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .quantity(dto.getQuantity())
+                .price(dto.getPrice())
+                .build();
     }
-    public List<ItemDTO> toDTOs(List<Item> entities){
-        return entities.stream().map(this::toDTO).toList();
+
+    public void updateEntityFromDto(Item existingItem, ItemRequestUpdateDto dto) {
+        existingItem.setName(dto.getName());
+        existingItem.setDescription(dto.getDescription());
+        existingItem.setQuantity(dto.getQuantity());
+        existingItem.setPrice(dto.getPrice());
     }
 }

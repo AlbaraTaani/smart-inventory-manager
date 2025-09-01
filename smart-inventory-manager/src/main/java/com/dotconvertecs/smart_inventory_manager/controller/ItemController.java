@@ -15,6 +15,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
+
+@CrossOrigin(origins = "http://localhost:4200")
 public class ItemController {
     private final ItemService service;
 

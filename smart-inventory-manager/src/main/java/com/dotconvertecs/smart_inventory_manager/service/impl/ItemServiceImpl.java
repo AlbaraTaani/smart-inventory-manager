@@ -5,32 +5,29 @@ import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestCr
 import com.dotconvertecs.smart_inventory_manager.model.dto.request.ItemRequestUpdateDto;
 import com.dotconvertecs.smart_inventory_manager.model.dto.response.ItemResponseDto;
 import com.dotconvertecs.smart_inventory_manager.model.entity.Item;
+import com.dotconvertecs.smart_inventory_manager.model.mapper.ItemMapper;
 import com.dotconvertecs.smart_inventory_manager.repository.ItemRepository;
 import com.dotconvertecs.smart_inventory_manager.service.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor; // Using Lombok for a cleaner constructor
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor // Replaces the manual constructor for dependency injection
 public class ItemServiceImpl implements ItemService {
+
+    // 1. Inject both the repository and the new mapper
     private final ItemRepository repository;
-
-    @Autowired
-    public ItemServiceImpl(ItemRepository repository) {
-        this.repository = repository;
-    }
-
+    private final ItemMapper itemMapper;
 
     @Override
     public List<ItemResponseDto> getAllItems(Double minPrice, Double maxPrice, String sortBy, String order) {
-        // Fetch all items, then filter/sort in-memory for simplicity
         List<Item> items = repository.findAll();
 
-        // Price filtering
+        // Price filtering (no change here)
         if (minPrice != null) {
             items = items.stream()
                     .filter(i -> i.getPrice() >= minPrice)
@@ -42,56 +39,67 @@ public class ItemServiceImpl implements ItemService {
                     .collect(Collectors.toList());
         }
 
-        // Sorting (only by "price" or default "id")
-        Comparator<Item> comparator = Comparator.comparing(Item::getId);
+        // Sorting (no change here)
+        Comparator<Item> comparator;
         if ("price".equalsIgnoreCase(sortBy)) {
             comparator = Comparator.comparing(Item::getPrice);
+        } else if ("name".equalsIgnoreCase(sortBy)) {
+            comparator = Comparator.comparing(Item::getName);
+        } else if ("quantity".equalsIgnoreCase(sortBy)) {
+            comparator = Comparator.comparing(Item::getQuantity);
+        } else {
+            comparator = Comparator.comparing(Item::getId);
         }
+
         if ("desc".equalsIgnoreCase(order)) {
             comparator = comparator.reversed();
         }
         items.sort(comparator);
 
-        // Map to DTOs
-        return items.stream().map(this::toDto).collect(Collectors.toList());
+        // 2. Use the mapper for the final conversion
+        return items.stream()
+                .map(itemMapper::toResponse) // Replaced this::toDto with itemMapper::toResponse
+                .collect(Collectors.toList());
     }
 
     @Override
     public ItemResponseDto getItemById(Long id) {
         Item item = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Item not found with id " + id));
-        return toDto(item);
-    }
 
+        // 2. Use the mapper
+        return itemMapper.toResponse(item);
+    }
 
     @Override
     public ItemResponseDto createItem(ItemRequestCreateDto dto) {
-        // Map DTO to entity
-        Item item = new Item();
-        item.setName(dto.getName());
-        item.setDescription(dto.getDescription());
-        item.setQuantity(dto.getQuantity());
-        item.setPrice(dto.getPrice());
-        repository.create(item);
-        return toDto(item);
+        // 2. Use the mapper to create the entity
+        Item itemToSave = itemMapper.toEntity(dto);
+
+        Item savedItem = repository.save(itemToSave); // Use the save method that returns the entity with ID
+
+        // 2. Use the mapper to create the response
+        return itemMapper.toResponse(savedItem);
     }
 
     @Override
     public ItemResponseDto updateItem(Long id, ItemRequestUpdateDto dto) {
         Item existing = repository.findById(id)
                 .orElseThrow(() -> new ItemNotFoundException("Item not found with id " + id));
-        existing.setName(dto.getName());
-        existing.setDescription(dto.getDescription());
-        existing.setQuantity(dto.getQuantity());
-        existing.setPrice(dto.getPrice());
+
+        // 2. Use the mapper to update the entity's fields
+        itemMapper.updateEntityFromDto(existing, dto);
+
         repository.update(existing);
-        return toDto(existing);
+
+        // 2. Use the mapper to create the response
+        return itemMapper.toResponse(existing);
     }
 
     @Override
     public void deleteItem(Long id) {
-        Optional<Item> existing = repository.findById(id);
-        if (existing.isEmpty()) {
+        // First check if the item exists to provide a clear error
+        if (repository.findById(id).isEmpty()) {
             throw new ItemNotFoundException("Item not found with id " + id);
         }
         repository.delete(id);
@@ -100,17 +108,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemResponseDto> getLowStockItems(int threshold) {
         List<Item> items = repository.findLowStock(threshold);
-        return items.stream().map(this::toDto).collect(Collectors.toList());
+        // 2. Use the mapper
+        return items.stream()
+                .map(itemMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
-    // Helper to map entity to DTO
-    private ItemResponseDto toDto(Item item) {
-        ItemResponseDto dto = new ItemResponseDto();
-        dto.setId(item.getId());
-        dto.setName(item.getName());
-        dto.setDescription(item.getDescription());
-        dto.setQuantity(item.getQuantity());
-        dto.setPrice(item.getPrice());
-        return dto;
-    }
+    // 3. The private toDto helper method is now removed! ✅
 }
